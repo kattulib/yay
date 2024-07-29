@@ -8,36 +8,38 @@ val commonSettings = Seq(
   )
 )
 
-lazy val example = project
-    .in(file("example"))
-    .dependsOn(root)
+lazy val server = project
+    .in(file("server"))
     .settings(
-        name := "example",
-        publish / skip := true,
         commonSettings,
+        name := "yay-server",
     )
-    .enablePlugins(ScalafixPlugin, AutomateHeaderPlugin)
+    .dependsOn(core)
 
-lazy val tests = project
-    .in(file("tests"))
-    .dependsOn(root)
+lazy val client = project
+    .in(file("client"))
     .settings(
-        name := "tests",
-        publish / skip := true,
+        commonSettings,
+        name := "yay-client",
+    )
+    .dependsOn(core)
+
+lazy val core = project
+    .in(file("core"))
+    .settings(
+        commonSettings,
         libraryDependencies ++= {
             Seq(
-                munit.value % Test,
+                kuram.value,
             )
         },
-        commonSettings,
     )
-    .enablePlugins(ScalafixPlugin, AutomateHeaderPlugin)
 
 lazy val root = project
     .in(file("."))
+    .aggregate(core, client, server)
     .settings(
         name := (ThisBuild / name).value,
-        commonSettings,
     )
     .enablePlugins(ScalafixPlugin, AutomateHeaderPlugin)
 
@@ -61,7 +63,7 @@ ThisBuild / scmInfo := Some(
 ThisBuild / developers ++= List(
     Developer(
         id      = "csgn", 
-        name    = "Sergen ÃepoÄlu", 
+        name    = "Sergen Çepoğlu", 
         email   = "dev.csgn@gmail.com", 
         url     = url("https://github.com/csgn")
     ),
@@ -79,7 +81,7 @@ ThisBuild / autoAPIMappings := true
 Compile / doc / scalacOptions ++= Seq(
     "-doc-title", (ThisBuild / name).value,
     "-project-version", (ThisBuild / version).value,
-    // "-project-logo", "docs/icon.jpeg",
+    "-project-logo", "docs/icon.jpeg",
 )
 
 /* publish settings */
